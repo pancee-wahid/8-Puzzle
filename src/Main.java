@@ -4,17 +4,39 @@ import java.util.Collections;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) {
+        String initialState = generateRandomInitialState();
+
+    }
+
+    private String generateRandomInitialState() {
         List<Integer> randomState = new ArrayList<Integer>();
-        for (int i = 0; i < 9; i++) {
-            randomState.add(i);
-        }
-        Collections.shuffle(randomState);
         String initialState = "";
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 9; i++)
+            randomState.add(i);
+
+        Collections.shuffle(randomState);
+
+        for (int i = 0; i < 9; i++)
             initialState += randomState.get(i);
-        }
-        System.out.println(initialState);
+
+        return initialState;
+    }
+
+    private void BFS() {
+
+    }
+
+    private void DFS() {
+
+    }
+
+    private void AStarEuclidean() {
+
+    }
+
+    private void AStarManhattan() {
 
     }
 }
