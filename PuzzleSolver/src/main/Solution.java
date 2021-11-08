@@ -1,12 +1,14 @@
+package main;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Solution {
-    List<String> path;
-    int pathCost;
-    List<String> expandedNodes;
-    int searchDepth;
-    long runningTime;
+    private List<String> path;
+    private int pathCost;
+    private List<String> expandedNodes;
+    private int searchDepth;
+    private long runningTime;
 
     public Solution() {
         this.path = new ArrayList<>();
