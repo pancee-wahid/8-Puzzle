@@ -1,9 +1,10 @@
 package main;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class Node {
-    private boolean visited;
+public class Node implements Comparable<Node>{
+//    private boolean visited;
     private String state;
     private Node parent;
     private List<Node> children;
@@ -25,24 +26,24 @@ public class Node {
     public Node(String state, Node parent) {
         setState(state);
         children = new ArrayList<>();
+        pathFromRoot = new ArrayList<>();
         setParent(parent);
-        setPathFromRoot(parent.pathFromRoot);
     }
 
     public void setPathFromRoot(List<String> pathFromRoot) {
-        this.pathFromRoot = pathFromRoot;
+        this.pathFromRoot.addAll(pathFromRoot);
         this.pathFromRoot.add(state);
         depth = this.pathFromRoot.size() - 1;
         cost = depth;
     }
 
-    public boolean isVisited() {
-        return visited;
-    }
-
-    public void setVisited(boolean visited) {
-        this.visited = visited;
-    }
+//    public boolean isVisited() {
+//        return visited;
+//    }
+//
+//    public void setVisited(boolean visited) {
+//        this.visited = visited;
+//    }
 
     public String getState() {
         return state;
@@ -58,7 +59,7 @@ public class Node {
 
     public void setParent(Node parent) {
         this.parent = parent;
-        setPathFromRoot(parent.pathFromRoot);
+        setPathFromRoot(parent.getPathFromRoot());
     }
 
     public List<Node> getChildren() {
@@ -93,7 +94,7 @@ public class Node {
         this.totalCost = totalCost;
     }
 
-    public double getDepth() {
+    public int getDepth() {
         return depth;
     }
 
@@ -105,5 +106,8 @@ public class Node {
         return pathFromRoot;
     }
 
-
+    @Override
+    public int compareTo(Node o) {
+        return Double.compare(this.totalCost, o.totalCost);
+    }
 }

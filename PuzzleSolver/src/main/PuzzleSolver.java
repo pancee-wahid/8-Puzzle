@@ -12,7 +12,7 @@ public class PuzzleSolver {
      * sets the initialState to the value of the parameter
      * @param initialState initial state entered
      */
-    private void setInitialState(String initialState) {
+    public void setInitialState(String initialState) {
         this.initialState = initialState;
 
         // create the root node with state = initialState
@@ -22,7 +22,7 @@ public class PuzzleSolver {
     /**
      * generates a random initial state
      */
-    private void setInitialState() {
+    public void setInitialState() {
         // generate list of numbers 0 to 8
         List<Integer> randomState = new ArrayList<>();
         for (int i = 0; i < 9; i++)
@@ -72,7 +72,7 @@ public class PuzzleSolver {
         Set<String> explored = new HashSet<>();
         frontier.add(root);
         while (!frontier.isEmpty()) {
-            currentNode = frontier.remove();
+            currentNode = frontier.poll();
             currentState = currentNode.getState();
             explored.add(currentState);
             expandedNodes.add(currentState);
@@ -92,8 +92,8 @@ public class PuzzleSolver {
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
         solution.setPath(currentNode.getPathFromRoot());
-        solution.setPathCost(solution.getPath().size());
-        solution.setSearchDepth(solution.getPath().size());
+        solution.setPathCost(solution.getPath().size() - 1);
+        solution.setSearchDepth(solution.getPath().size() - 1);
         solution.setExpandedNodes(expandedNodes);
         return solution;
     }
@@ -129,55 +129,56 @@ public class PuzzleSolver {
 
         switch (zeroPosition) {
             case 0:
-                successors.add(swapCharacters(currentState, 1));
-                successors.add(swapCharacters(currentState, 3));
+                successors.add(swapCharacters(currentState, 1)); //R
+                successors.add(swapCharacters(currentState, 3)); //D
                 break;
             case 1:
-                successors.add(swapCharacters(currentState, 0));
-                successors.add(swapCharacters(currentState, 2));
-                successors.add(swapCharacters(currentState, 4));
+                successors.add(swapCharacters(currentState, 0)); //L
+                successors.add(swapCharacters(currentState, 2)); //R
+                successors.add(swapCharacters(currentState, 4)); //D
                 break;
             case 2:
-                successors.add(swapCharacters(currentState, 1));
-                successors.add(swapCharacters(currentState, 5));
+                successors.add(swapCharacters(currentState, 1)); //L
+                successors.add(swapCharacters(currentState, 5)); //D
                 break;
             case 3:
-                successors.add(swapCharacters(currentState, 0));
-                successors.add(swapCharacters(currentState, 4));
-                successors.add(swapCharacters(currentState, 6));
+                successors.add(swapCharacters(currentState, 4)); //R
+                successors.add(swapCharacters(currentState, 0)); //U
+                successors.add(swapCharacters(currentState, 6)); //D
                 break;
             case 4:
-                successors.add(swapCharacters(currentState, 1));
-                successors.add(swapCharacters(currentState, 3));
-                successors.add(swapCharacters(currentState, 5));
-                successors.add(swapCharacters(currentState, 7));
+                successors.add(swapCharacters(currentState, 3)); //L
+                successors.add(swapCharacters(currentState, 5)); //R
+                successors.add(swapCharacters(currentState, 1)); //U
+                successors.add(swapCharacters(currentState, 7)); //D
                 break;
             case 5:
-                successors.add(swapCharacters(currentState, 2));
-                successors.add(swapCharacters(currentState, 4));
-                successors.add(swapCharacters(currentState, 8));
+                successors.add(swapCharacters(currentState, 4)); //L
+                successors.add(swapCharacters(currentState, 2)); //U
+                successors.add(swapCharacters(currentState, 8)); //D
                 break;
             case 6:
-                successors.add(swapCharacters(currentState, 3));
-                successors.add(swapCharacters(currentState, 7));
+                successors.add(swapCharacters(currentState, 7)); //R
+                successors.add(swapCharacters(currentState, 3)); //U
                 break;
             case 7:
-                successors.add(swapCharacters(currentState, 4));
-                successors.add(swapCharacters(currentState, 6));
-                successors.add(swapCharacters(currentState, 8));
+                successors.add(swapCharacters(currentState, 6)); //L
+                successors.add(swapCharacters(currentState, 8)); //R
+                successors.add(swapCharacters(currentState, 4)); //U
                 break;
             case 8:
-                successors.add(swapCharacters(currentState, 5));
-                successors.add(swapCharacters(currentState, 7));
+                successors.add(swapCharacters(currentState, 7)); //L
+                successors.add(swapCharacters(currentState, 5)); //U
                 break;
         }
         return successors;
     }
 
     private String swapCharacters(String state, int index) {
-        state.replace('0', state.charAt(index));
-        state.replace(state.charAt(index), '0');
-        return state;
+        int indexOfZero = state.indexOf('0');
+        String updated = state.substring(0, indexOfZero) + state.charAt(index) + state.substring(indexOfZero + 1);
+        updated = updated.substring(0, index) + "0" + updated.substring(index + 1);
+        return updated;
     }
 
 
@@ -186,16 +187,20 @@ public class PuzzleSolver {
         List<String> expandedNodes = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        // DFS Algorithm
+        // BFS Algorithm
         int totalCost = 0;
         Node currentNode = root;
         String currentState;
         Stack<Node> frontier = new Stack<>();
         Set<String> explored = new HashSet<>();
+        int searchDepth = -1;
+
         frontier.push(root);
         while (!frontier.isEmpty()) {
             currentNode = frontier.pop();
             currentState = currentNode.getState();
+            if (searchDepth < currentNode.getDepth())
+                searchDepth = currentNode.getDepth();
             explored.add(currentState);
             expandedNodes.add(currentState);
             if (currentState.equals(goalState)) {
@@ -214,8 +219,8 @@ public class PuzzleSolver {
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
         solution.setPath(currentNode.getPathFromRoot());
-        solution.setPathCost(solution.getPath().size());
-        solution.setSearchDepth(solution.getPath().size());
+        solution.setPathCost(solution.getPath().size() - 1);
+        solution.setSearchDepth(searchDepth);
         solution.setExpandedNodes(expandedNodes);
         return solution;
     }
@@ -229,12 +234,15 @@ public class PuzzleSolver {
         int totalCost = 0;
         Node currentNode = root;
         String currentState;
+        int searchDepth = -1;
 
         PriorityQueue<Node> frontier = new PriorityQueue<>();
         Set<String> explored = new HashSet<>();
         frontier.add(root);
         while (!frontier.isEmpty()) {
-            currentNode = frontier.remove();
+            currentNode = frontier.poll();
+            if (searchDepth < currentNode.getDepth())
+                searchDepth = currentNode.getDepth();
             currentState = currentNode.getState();
             explored.add(currentState);
             expandedNodes.add(currentState);
@@ -270,7 +278,6 @@ public class PuzzleSolver {
                             }
                             break;
                         }
-
                     }
                 }
             }
@@ -278,9 +285,9 @@ public class PuzzleSolver {
 
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-        solution.setPath(tracePath(currentNode));
-        solution.setPathCost(solution.getPath().size());
-        solution.setSearchDepth(solution.getPath().size());
+        solution.setPath(currentNode.getPathFromRoot());
+        solution.setPathCost(solution.getPath().size() - 1);
+        solution.setSearchDepth(searchDepth);
         solution.setExpandedNodes(expandedNodes);
         return solution;
     }
