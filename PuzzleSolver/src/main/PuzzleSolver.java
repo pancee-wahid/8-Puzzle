@@ -222,17 +222,87 @@ public class PuzzleSolver {
 
     private Solution AStar(Heuristic heuristic) {
         Solution solution = new Solution();
-        //Todo
+        List<String> expandedNodes = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
 
-        /*
-        if (heuristic.equals(Heuristic.EUCLIDEAN)) {
-            //calculate using euclidean distance
-        } else {
-            //calculate using manhattan distance
+        // A* Algorithm
+        int totalCost = 0;
+        Node currentNode = root;
+        String currentState;
+
+        PriorityQueue<Node> frontier = new PriorityQueue<>();
+        Set<String> explored = new HashSet<>();
+        frontier.add(root);
+        while (!frontier.isEmpty()) {
+            currentNode = frontier.remove();
+            currentState = currentNode.getState();
+            explored.add(currentState);
+            expandedNodes.add(currentState);
+            if (currentState.equals(goalState)) {
+                break;
+            }
+            List<String> successorStates = getSuccessors(currentState);
+            for (String successorState : successorStates) {
+                double h;
+                if (heuristic == Heuristic.EUCLIDEAN) {
+                    h = euclideanDistance(successorState,goalState);
+                } else {
+                    h = manhattanDistance(successorState,goalState);
+                }
+                double g = currentNode.getCost() + 1;
+                double f = g + h;
+                if (!explored.contains(successorState)) {
+                    Node newNode = new Node(successorState, currentNode);
+                    newNode.setTotalCost(f);
+                    newNode.setCost(g);
+                    newNode.setEstimatedCostToGoal(h);
+                    currentNode.addChild(newNode);
+                    frontier.add(newNode);
+                } else {
+                    Iterator i = frontier.iterator();
+                    while (i.hasNext()) {
+                        if (successorState == ((Node) i.next()).getState()) {
+                            if (f < ((Node) i.next()).getTotalCost()) {
+                                ((Node) i.next()).setTotalCost(f);
+                                ((Node) i.next()).setCost(g);
+                                ((Node) i.next()).setEstimatedCostToGoal(h);
+                                ((Node) i.next()).setParent(currentNode);
+                            }
+                            break;
+                        }
+
+                    }
+                }
+            }
         }
-        */
 
+        // solution preparation
+        solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
+        solution.setPath(tracePath(currentNode));
+        solution.setPathCost(solution.getPath().size());
+        solution.setSearchDepth(solution.getPath().size());
+        solution.setExpandedNodes(expandedNodes);
         return solution;
+    }
+    private double euclideanDistance(String state, String goalState){
+        double d=0;
+        for (int i = 0; i < state.length(); i += 1)
+            for (int j = 0; j < goalState.length(); j += 1)
+                if (state.charAt(i) == goalState.charAt(j)){
+                    int x1=i%3;int x2=j%3;int y1=i/3;int y2=j/3;
+                    d = d + Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
+                }
+        return d;
+    }
+    private double manhattanDistance(String state, String goalState){
+        double d=0;
+        for (int i = 0; i < state.length(); i += 1)
+            for (int j = 0; j < goalState.length(); j += 1)
+                if (state.charAt(i) == goalState.charAt(j)) {
+                    int x1=i%3;int x2=j%3;int y1=i/3;int y2=j/3;
+                    d = d + ((Math.abs(x1 - x2)) + Math.abs(y1 - y2));
+                }
+        return d;
     }
 
 }

@@ -8,9 +8,9 @@ public class Node {
     private Node parent;
     private List<Node> children;
     private List<String> pathFromRoot;
-    private int cost;
-    private int estimatedCostToGoal; // A*
-    private int totalCost; // A*
+    private double cost;
+    private double estimatedCostToGoal; // A*
+    private double totalCost; // A*
     private int depth;
 
     // create root node
@@ -32,6 +32,8 @@ public class Node {
     public void setPathFromRoot(List<String> pathFromRoot) {
         this.pathFromRoot = pathFromRoot;
         this.pathFromRoot.add(state);
+        depth = this.pathFromRoot.size() - 1;
+        cost = depth;
     }
 
     public boolean isVisited() {
@@ -67,35 +69,31 @@ public class Node {
         children.add(child);
     }
 
-    public int getCost() {
+    public double getCost() {
         return cost;
     }
 
-    public void setCost(int cost) {
+    public void setCost(double cost) {
         this.cost = cost;
     }
 
-    public int getEstimatedCostToGoal() {
+    public double getEstimatedCostToGoal() {
         return estimatedCostToGoal;
     }
 
-    public void setEstimatedCostToGoal(int estimatedCostToGoal) {
+    public void setEstimatedCostToGoal(double estimatedCostToGoal) {
         this.estimatedCostToGoal = estimatedCostToGoal;
     }
 
-    public int getTotalCost() {
+    public double getTotalCost() {
         return totalCost;
     }
 
-    public void setTotalCost(int totalCost) {
+    public void setTotalCost(double totalCost) {
         this.totalCost = totalCost;
     }
 
-    public void setTotalCost(int cost, int estimatedCostToGoal) {
-        this.totalCost = cost + estimatedCostToGoal;
-    }
-
-    public int getDepth() {
+    public double getDepth() {
         return depth;
     }
 
