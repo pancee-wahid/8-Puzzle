@@ -264,7 +264,6 @@ public class PuzzleSolver {
                     Node newNode = new Node(currentNode, move);
                     newNode.setTotalCost(f);
                     newNode.setCost(g);
-                    newNode.setEstimatedCostToGoal(h);
                     currentNode.addChild(newNode);
                     frontier.add(newNode);
                 } else {
@@ -274,7 +273,6 @@ public class PuzzleSolver {
                             if (f < ((Node) i.next()).getTotalCost()) {
                                 ((Node) i.next()).setTotalCost(f);
                                 ((Node) i.next()).setCost(g);
-                                ((Node) i.next()).setEstimatedCostToGoal(h);
                                 ((Node) i.next()).setParent(currentNode, move);
                             }
                             break;

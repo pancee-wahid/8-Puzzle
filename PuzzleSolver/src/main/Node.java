@@ -1,52 +1,29 @@
 package main;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Node implements Comparable<Node>{
     private String state;
     private Node parent;
-    private List<Node> children;
-//    private List<String> pathFromRoot;
-    private List<Move> moves;
-    private double cost;
-    private double estimatedCostToGoal; // A*
-    private double totalCost; // A*
+    private List<Node> children; // list of all children of the node
+    private List<Move> moves; // list of moves from root to current node
+    private double cost; // the cost of the path from root to the node
+    private double totalCost; // the sum of the estimated cost (using heuristic) and the cost
     private int depth;
 
     // create root node
     public Node(String state) {
         setState(state);
         children = new ArrayList<>();
-//        pathFromRoot = new ArrayList<>();
-//        pathFromRoot.add(state);
         moves = new ArrayList<>();
     }
 
-    // create non-root node
+    // create internal(or leaf) node
+    // add move to list of moves and set parent
     public Node(Node parent, Move move) {
         setState(move.getState());
         children = new ArrayList<>();
-//        pathFromRoot = new ArrayList<>();
         setParent(parent, move);
-    }
-
-//    public void setPathFromRoot(List<String> pathFromRoot) {
-//        this.pathFromRoot.addAll(pathFromRoot);
-//        this.pathFromRoot.add(state);
-//    }
-
-    public void setMoves(List<Move> moves, Move nextMove) {
-        this.moves = new ArrayList<>();
-        if (moves != null && !moves.isEmpty())
-            this.moves.addAll(moves);
-        this.moves.add(nextMove);
-        depth = this.moves.size();
-        cost = depth;
-    }
-
-    public List<Move> getMoves() {
-        return moves;
     }
 
     public String getState() {
@@ -63,7 +40,6 @@ public class Node implements Comparable<Node>{
 
     public void setParent(Node parent, Move move) {
         this.parent = parent;
-//        setPathFromRoot(parent.getPathFromRoot());
         setMoves(parent.moves, move);
     }
 
@@ -75,20 +51,25 @@ public class Node implements Comparable<Node>{
         children.add(child);
     }
 
+    public void setMoves(List<Move> moves, Move nextMove) {
+        this.moves = new ArrayList<>();
+        if (moves != null && !moves.isEmpty())
+            this.moves.addAll(moves);
+        this.moves.add(nextMove);
+        depth = this.moves.size();
+        cost = depth;
+    }
+
+    public List<Move> getMoves() {
+        return moves;
+    }
+
     public double getCost() {
         return cost;
     }
 
     public void setCost(double cost) {
         this.cost = cost;
-    }
-
-    public double getEstimatedCostToGoal() {
-        return estimatedCostToGoal;
-    }
-
-    public void setEstimatedCostToGoal(double estimatedCostToGoal) {
-        this.estimatedCostToGoal = estimatedCostToGoal;
     }
 
     public double getTotalCost() {
@@ -106,10 +87,6 @@ public class Node implements Comparable<Node>{
     public void setDepth(int depth) {
         this.depth = depth;
     }
-
-//    public List<String> getPathFromRoot() {
-//        return pathFromRoot;
-//    }
 
     @Override
     public int compareTo(Node o) {
