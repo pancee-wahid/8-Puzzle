@@ -91,13 +91,14 @@ public class PuzzleSolver {
 
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-        solution.setPath(tracePath(currentNode));
+        solution.setPath(currentNode.getPathFromRoot());
         solution.setPathCost(solution.getPath().size());
         solution.setSearchDepth(solution.getPath().size());
         solution.setExpandedNodes(expandedNodes);
         return solution;
     }
 
+    // Todo -> Make sure we don't want it  then delete
     /**
      * get the path by tracing the leaf (goal) to the root (initial)
      * @param currentNode the leaf node
@@ -182,16 +183,40 @@ public class PuzzleSolver {
 
     private Solution DFS() {
         Solution solution = new Solution();
+        List<String> expandedNodes = new ArrayList<>();
         long startTime = System.currentTimeMillis();
 
-        //Todo
+        // DFS Algorithm
+        int totalCost = 0;
+        Node currentNode = root;
+        String currentState;
+        Stack<Node> frontier = new Stack<>();
+        Set<String> explored = new HashSet<>();
+        frontier.push(root);
+        while (!frontier.isEmpty()) {
+            currentNode = frontier.pop();
+            currentState = currentNode.getState();
+            explored.add(currentState);
+            expandedNodes.add(currentState);
+            if (currentState.equals(goalState)) {
+                break;
+            }
+            List<String> successorStates = getSuccessors(currentState);
+            for (String successorState : successorStates) {
+                if (!explored.contains(successorState)) {
+                    Node newNode = new Node(successorState, currentNode);
+                    currentNode.addChild(newNode);
+                    frontier.push(newNode);
+                }
+            }
+        }
 
-
-
-        //solution preparation
+        // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-        //Todo
-
+        solution.setPath(currentNode.getPathFromRoot());
+        solution.setPathCost(solution.getPath().size());
+        solution.setSearchDepth(solution.getPath().size());
+        solution.setExpandedNodes(expandedNodes);
         return solution;
     }
 
