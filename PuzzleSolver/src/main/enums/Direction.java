@@ -1,6 +1,6 @@
 package main.enums;
 
-public enum Move {
+public enum Direction {
     UP,
     DOWN,
     LEFT,
