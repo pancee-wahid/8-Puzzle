@@ -5,14 +5,18 @@ import java.util.List;
 
 public class Solution {
     private List<String> path;
+    private List<Move> moves;
     private int pathCost;
     private List<String> expandedNodes;
     private int searchDepth;
     private long runningTime;
 
+
+
     public Solution() {
-        this.path = new ArrayList<>();
-        this.expandedNodes = new ArrayList<>();
+//        this.path = new ArrayList<>();
+//        this.expandedNodes = new ArrayList<>();
+        this.moves = new ArrayList<>();
         this.pathCost = 0;
         this.searchDepth = 0;
         this.runningTime = 0;
@@ -38,6 +42,13 @@ public class Solution {
         this.pathCost++;
     }
 
+    public List<Move> getMoves() {
+        return moves;
+    }
+
+    public void setMoves(List<Move> moves) {
+        this.moves = moves;
+    }
     public List<String> getExpandedNodes() {
         return expandedNodes;
     }

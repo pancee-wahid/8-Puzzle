@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class Node implements Comparable<Node>{
-//    private boolean visited;
     private String state;
     private Node parent;
     private List<Node> children;
-    private List<String> pathFromRoot;
+//    private List<String> pathFromRoot;
+    private List<Move> moves;
     private double cost;
     private double estimatedCostToGoal; // A*
     private double totalCost; // A*
@@ -18,32 +18,36 @@ public class Node implements Comparable<Node>{
     public Node(String state) {
         setState(state);
         children = new ArrayList<>();
-        pathFromRoot = new ArrayList<>();
-        pathFromRoot.add(state);
+//        pathFromRoot = new ArrayList<>();
+//        pathFromRoot.add(state);
+        moves = new ArrayList<>();
     }
 
     // create non-root node
-    public Node(String state, Node parent) {
-        setState(state);
+    public Node(Node parent, Move move) {
+        setState(move.getState());
         children = new ArrayList<>();
-        pathFromRoot = new ArrayList<>();
-        setParent(parent);
+//        pathFromRoot = new ArrayList<>();
+        setParent(parent, move);
     }
 
-    public void setPathFromRoot(List<String> pathFromRoot) {
-        this.pathFromRoot.addAll(pathFromRoot);
-        this.pathFromRoot.add(state);
-        depth = this.pathFromRoot.size() - 1;
+//    public void setPathFromRoot(List<String> pathFromRoot) {
+//        this.pathFromRoot.addAll(pathFromRoot);
+//        this.pathFromRoot.add(state);
+//    }
+
+    public void setMoves(List<Move> moves, Move nextMove) {
+        this.moves = new ArrayList<>();
+        if (moves != null && !moves.isEmpty())
+            this.moves.addAll(moves);
+        this.moves.add(nextMove);
+        depth = this.moves.size();
         cost = depth;
     }
 
-//    public boolean isVisited() {
-//        return visited;
-//    }
-//
-//    public void setVisited(boolean visited) {
-//        this.visited = visited;
-//    }
+    public List<Move> getMoves() {
+        return moves;
+    }
 
     public String getState() {
         return state;
@@ -57,9 +61,10 @@ public class Node implements Comparable<Node>{
         return parent;
     }
 
-    public void setParent(Node parent) {
+    public void setParent(Node parent, Move move) {
         this.parent = parent;
-        setPathFromRoot(parent.getPathFromRoot());
+//        setPathFromRoot(parent.getPathFromRoot());
+        setMoves(parent.moves, move);
     }
 
     public List<Node> getChildren() {
@@ -102,9 +107,9 @@ public class Node implements Comparable<Node>{
         this.depth = depth;
     }
 
-    public List<String> getPathFromRoot() {
-        return pathFromRoot;
-    }
+//    public List<String> getPathFromRoot() {
+//        return pathFromRoot;
+//    }
 
     @Override
     public int compareTo(Node o) {

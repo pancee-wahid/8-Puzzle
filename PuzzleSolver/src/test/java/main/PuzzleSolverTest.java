@@ -14,8 +14,7 @@ class PuzzleSolverTest {
     @Test
     void BFS_test_1() {
         PuzzleSolver p = new PuzzleSolver();
-        List<String> correctPath = new ArrayList<>(Arrays.asList("125340678", "120345678",
-                "102345678", "012345678"));
+        List<String> correctPath = new ArrayList<>(Arrays.asList());
         int noExpandedNodes = 16;
         int pathCost = 3;
         p.setInitialState("125340678");

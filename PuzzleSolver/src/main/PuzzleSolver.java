@@ -74,15 +74,15 @@ public class PuzzleSolver {
         while (!frontier.isEmpty()) {
             currentNode = frontier.poll();
             currentState = currentNode.getState();
-            explored.add(currentState);
-            expandedNodes.add(currentState);
             if (currentState.equals(goalState)) {
                 break;
             }
-            List<String> successorStates = getSuccessors(currentState);
-            for (String successorState : successorStates) {
-                if (!explored.contains(successorState)) {
-                    Node newNode = new Node(successorState, currentNode);
+            explored.add(currentState);
+            expandedNodes.add(currentState);
+            List<Move> successorStates = getSuccessors(currentState);
+            for (Move move : successorStates) {
+                if (!explored.contains(move.getState())) {
+                    Node newNode = new Node(currentNode, move);
                     currentNode.addChild(newNode);
                     frontier.add(newNode);
                 }
@@ -91,9 +91,10 @@ public class PuzzleSolver {
 
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-        solution.setPath(currentNode.getPathFromRoot());
-        solution.setPathCost(solution.getPath().size() - 1);
-        solution.setSearchDepth(solution.getPath().size() - 1);
+//        solution.setPath(currentNode.getPathFromRoot());
+        solution.setPathCost(currentNode.getMoves().size());
+        solution.setMoves(currentNode.getMoves());
+        solution.setSearchDepth(solution.getPathCost());
         solution.setExpandedNodes(expandedNodes);
         return solution;
     }
@@ -123,52 +124,53 @@ public class PuzzleSolver {
      * @param currentState current state
      * @return list of successor states
      */
-    private List<String> getSuccessors(String currentState) {
-        List<String> successors = new ArrayList<>();
+    private List<Move> getSuccessors(String currentState) {
+        List<Move> successors = new ArrayList<>();
         int zeroPosition = currentState.indexOf("0");
 
         switch (zeroPosition) {
             case 0:
-                successors.add(swapCharacters(currentState, 1)); //R
-                successors.add(swapCharacters(currentState, 3)); //D
+                successors.add(new Move(swapCharacters(currentState, 1), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 3), Direction.DOWN));
                 break;
             case 1:
-                successors.add(swapCharacters(currentState, 0)); //L
-                successors.add(swapCharacters(currentState, 2)); //R
-                successors.add(swapCharacters(currentState, 4)); //D
+                successors.add(new Move(swapCharacters(currentState, 0), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 2), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 4), Direction.DOWN));
                 break;
             case 2:
-                successors.add(swapCharacters(currentState, 1)); //L
-                successors.add(swapCharacters(currentState, 5)); //D
+                successors.add(new Move(swapCharacters(currentState, 1), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 5), Direction.DOWN));
+
                 break;
             case 3:
-                successors.add(swapCharacters(currentState, 4)); //R
-                successors.add(swapCharacters(currentState, 0)); //U
-                successors.add(swapCharacters(currentState, 6)); //D
+                successors.add(new Move(swapCharacters(currentState, 4), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 0), Direction.UP));
+                successors.add(new Move(swapCharacters(currentState, 6), Direction.DOWN));
                 break;
             case 4:
-                successors.add(swapCharacters(currentState, 3)); //L
-                successors.add(swapCharacters(currentState, 5)); //R
-                successors.add(swapCharacters(currentState, 1)); //U
-                successors.add(swapCharacters(currentState, 7)); //D
+                successors.add(new Move(swapCharacters(currentState, 3), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 5), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 1), Direction.UP));
+                successors.add(new Move(swapCharacters(currentState, 7), Direction.DOWN));
                 break;
             case 5:
-                successors.add(swapCharacters(currentState, 4)); //L
-                successors.add(swapCharacters(currentState, 2)); //U
-                successors.add(swapCharacters(currentState, 8)); //D
+                successors.add(new Move(swapCharacters(currentState, 4), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 2), Direction.UP));
+                successors.add(new Move(swapCharacters(currentState, 8), Direction.DOWN));
                 break;
             case 6:
-                successors.add(swapCharacters(currentState, 7)); //R
-                successors.add(swapCharacters(currentState, 3)); //U
+                successors.add(new Move(swapCharacters(currentState, 7), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 3), Direction.UP));
                 break;
             case 7:
-                successors.add(swapCharacters(currentState, 6)); //L
-                successors.add(swapCharacters(currentState, 8)); //R
-                successors.add(swapCharacters(currentState, 4)); //U
+                successors.add(new Move(swapCharacters(currentState, 6), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 8), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 4), Direction.UP));
                 break;
             case 8:
-                successors.add(swapCharacters(currentState, 7)); //L
-                successors.add(swapCharacters(currentState, 5)); //U
+                successors.add(new Move(swapCharacters(currentState, 7), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 5), Direction.UP));
                 break;
         }
         return successors;
@@ -199,17 +201,16 @@ public class PuzzleSolver {
         while (!frontier.isEmpty()) {
             currentNode = frontier.pop();
             currentState = currentNode.getState();
+            if (currentState.equals(goalState))
+                break;
             if (searchDepth < currentNode.getDepth())
                 searchDepth = currentNode.getDepth();
             explored.add(currentState);
             expandedNodes.add(currentState);
-            if (currentState.equals(goalState)) {
-                break;
-            }
-            List<String> successorStates = getSuccessors(currentState);
-            for (String successorState : successorStates) {
-                if (!explored.contains(successorState)) {
-                    Node newNode = new Node(successorState, currentNode);
+            List<Move> successorStates = getSuccessors(currentState);
+            for (Move move : successorStates) {
+                if (!explored.contains(move.getState())) {
+                    Node newNode = new Node(currentNode, move);
                     currentNode.addChild(newNode);
                     frontier.push(newNode);
                 }
@@ -218,12 +219,12 @@ public class PuzzleSolver {
 
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-        solution.setPath(currentNode.getPathFromRoot());
-        solution.setPathCost(solution.getPath().size() - 1);
-        solution.setSearchDepth(searchDepth);
+//        solution.setPath(currentNode.getPathFromRoot());
+        solution.setPathCost(currentNode.getMoves().size());
+        solution.setMoves(currentNode.getMoves());
+        solution.setSearchDepth(solution.getPathCost());
         solution.setExpandedNodes(expandedNodes);
-        return solution;
-    }
+        return solution;    }
 
     private Solution AStar(Heuristic heuristic) {
         Solution solution = new Solution();
@@ -249,18 +250,18 @@ public class PuzzleSolver {
             if (currentState.equals(goalState)) {
                 break;
             }
-            List<String> successorStates = getSuccessors(currentState);
-            for (String successorState : successorStates) {
+            List<Move> successorStates = getSuccessors(currentState);
+            for (Move move : successorStates) {
                 double h;
                 if (heuristic == Heuristic.EUCLIDEAN) {
-                    h = euclideanDistance(successorState,goalState);
+                    h = euclideanDistance(move.getState(),goalState);
                 } else {
-                    h = manhattanDistance(successorState,goalState);
+                    h = manhattanDistance(move.getState(),goalState);
                 }
                 double g = currentNode.getCost() + 1;
                 double f = g + h;
-                if (!explored.contains(successorState)) {
-                    Node newNode = new Node(successorState, currentNode);
+                if (!explored.contains(move.getState())) {
+                    Node newNode = new Node(currentNode, move);
                     newNode.setTotalCost(f);
                     newNode.setCost(g);
                     newNode.setEstimatedCostToGoal(h);
@@ -269,12 +270,12 @@ public class PuzzleSolver {
                 } else {
                     Iterator i = frontier.iterator();
                     while (i.hasNext()) {
-                        if (successorState == ((Node) i.next()).getState()) {
+                        if (move.getState() == ((Node) i.next()).getState()) {
                             if (f < ((Node) i.next()).getTotalCost()) {
                                 ((Node) i.next()).setTotalCost(f);
                                 ((Node) i.next()).setCost(g);
                                 ((Node) i.next()).setEstimatedCostToGoal(h);
-                                ((Node) i.next()).setParent(currentNode);
+                                ((Node) i.next()).setParent(currentNode, move);
                             }
                             break;
                         }
@@ -285,8 +286,9 @@ public class PuzzleSolver {
 
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-        solution.setPath(currentNode.getPathFromRoot());
-        solution.setPathCost(solution.getPath().size() - 1);
+//        solution.setPath(currentNode.getPathFromRoot());
+        solution.setPathCost(currentNode.getMoves().size());
+        solution.setMoves(currentNode.getMoves());
         solution.setSearchDepth(searchDepth);
         solution.setExpandedNodes(expandedNodes);
         return solution;
