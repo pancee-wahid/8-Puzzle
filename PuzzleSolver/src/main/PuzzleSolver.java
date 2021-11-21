@@ -4,7 +4,7 @@ import main.enums.*;
 import java.util.*;
 
 public class PuzzleSolver {
-    final private String goalState = "012345678";
+    final private String goalState = "012345678"; // the given goal state
     private String initialState = "";
     private Node root;
 
@@ -54,7 +54,6 @@ public class PuzzleSolver {
         };
     }
 
-    // Todo -> to be tested
     /**
      * applying BFS Algorithm
      * @return object of type Solution that contains the path, expandedNodes, cost, runningTime & searchDepth
@@ -91,7 +90,6 @@ public class PuzzleSolver {
 
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-//        solution.setPath(currentNode.getPathFromRoot());
         solution.setPathCost(currentNode.getMoves().size());
         solution.setMoves(currentNode.getMoves());
         solution.setSearchDepth(solution.getPathCost());
@@ -99,91 +97,10 @@ public class PuzzleSolver {
         return solution;
     }
 
-    // Todo -> Make sure we don't want it  then delete
     /**
-     * get the path by tracing the leaf (goal) to the root (initial)
-     * @param currentNode the leaf node
-     * @return list containing the nodes of the path
+     * applying DFS Algorithm
+     * @return object of type Solution that contains the path, expandedNodes, cost, runningTime & searchDepth
      */
-    private List<String> tracePath(Node currentNode) {
-        List<String> path = new ArrayList<>();
-        int cost = 0;
-        while (currentNode != null) {
-            path.add(currentNode.getState());
-            if (currentNode.getParent() != null)
-                currentNode = currentNode.getParent();
-            else
-                break;
-        }
-        return path;
-    }
-
-    // Todo -> to be tested
-    /**
-     * get the successor states of the current state
-     * @param currentState current state
-     * @return list of successor states
-     */
-    private List<Move> getSuccessors(String currentState) {
-        List<Move> successors = new ArrayList<>();
-        int zeroPosition = currentState.indexOf("0");
-
-        switch (zeroPosition) {
-            case 0:
-                successors.add(new Move(swapCharacters(currentState, 1), Direction.RIGHT));
-                successors.add(new Move(swapCharacters(currentState, 3), Direction.DOWN));
-                break;
-            case 1:
-                successors.add(new Move(swapCharacters(currentState, 0), Direction.LEFT));
-                successors.add(new Move(swapCharacters(currentState, 2), Direction.RIGHT));
-                successors.add(new Move(swapCharacters(currentState, 4), Direction.DOWN));
-                break;
-            case 2:
-                successors.add(new Move(swapCharacters(currentState, 1), Direction.LEFT));
-                successors.add(new Move(swapCharacters(currentState, 5), Direction.DOWN));
-
-                break;
-            case 3:
-                successors.add(new Move(swapCharacters(currentState, 4), Direction.RIGHT));
-                successors.add(new Move(swapCharacters(currentState, 0), Direction.UP));
-                successors.add(new Move(swapCharacters(currentState, 6), Direction.DOWN));
-                break;
-            case 4:
-                successors.add(new Move(swapCharacters(currentState, 3), Direction.LEFT));
-                successors.add(new Move(swapCharacters(currentState, 5), Direction.RIGHT));
-                successors.add(new Move(swapCharacters(currentState, 1), Direction.UP));
-                successors.add(new Move(swapCharacters(currentState, 7), Direction.DOWN));
-                break;
-            case 5:
-                successors.add(new Move(swapCharacters(currentState, 4), Direction.LEFT));
-                successors.add(new Move(swapCharacters(currentState, 2), Direction.UP));
-                successors.add(new Move(swapCharacters(currentState, 8), Direction.DOWN));
-                break;
-            case 6:
-                successors.add(new Move(swapCharacters(currentState, 7), Direction.RIGHT));
-                successors.add(new Move(swapCharacters(currentState, 3), Direction.UP));
-                break;
-            case 7:
-                successors.add(new Move(swapCharacters(currentState, 6), Direction.LEFT));
-                successors.add(new Move(swapCharacters(currentState, 8), Direction.RIGHT));
-                successors.add(new Move(swapCharacters(currentState, 4), Direction.UP));
-                break;
-            case 8:
-                successors.add(new Move(swapCharacters(currentState, 7), Direction.LEFT));
-                successors.add(new Move(swapCharacters(currentState, 5), Direction.UP));
-                break;
-        }
-        return successors;
-    }
-
-    private String swapCharacters(String state, int index) {
-        int indexOfZero = state.indexOf('0');
-        String updated = state.substring(0, indexOfZero) + state.charAt(index) + state.substring(indexOfZero + 1);
-        updated = updated.substring(0, index) + "0" + updated.substring(index + 1);
-        return updated;
-    }
-
-
     private Solution DFS() {
         Solution solution = new Solution();
         List<String> expandedNodes = new ArrayList<>();
@@ -219,13 +136,17 @@ public class PuzzleSolver {
 
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-//        solution.setPath(currentNode.getPathFromRoot());
         solution.setPathCost(currentNode.getMoves().size());
         solution.setMoves(currentNode.getMoves());
         solution.setSearchDepth(solution.getPathCost());
         solution.setExpandedNodes(expandedNodes);
-        return solution;    }
+        return solution;
+    }
 
+    /**
+     * applying A* Algorithm using the given heuristic
+     * @return object of type Solution that contains the path, expandedNodes, cost, runningTime & searchDepth
+     */
     private Solution AStar(Heuristic heuristic) {
         Solution solution = new Solution();
         List<String> expandedNodes = new ArrayList<>();
@@ -284,32 +205,131 @@ public class PuzzleSolver {
 
         // solution preparation
         solution.setRunningTime(System.currentTimeMillis() - startTime); // in milliseconds
-//        solution.setPath(currentNode.getPathFromRoot());
         solution.setPathCost(currentNode.getMoves().size());
         solution.setMoves(currentNode.getMoves());
         solution.setSearchDepth(searchDepth);
         solution.setExpandedNodes(expandedNodes);
         return solution;
     }
-    private double euclideanDistance(String state, String goalState){
-        double d=0;
-        for (int i = 0; i < state.length(); i += 1)
-            for (int j = 0; j < goalState.length(); j += 1)
-                if (state.charAt(i) == goalState.charAt(j)){
-                    int x1=i%3;int x2=j%3;int y1=i/3;int y2=j/3;
-                    d = d + Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
-                }
-        return d;
-    }
-    private double manhattanDistance(String state, String goalState){
-        double d=0;
-        for (int i = 0; i < state.length(); i += 1)
-            for (int j = 0; j < goalState.length(); j += 1)
+
+    private double euclideanDistance(String state, String goalState) {
+        double d = 0;
+        for (int i = 0; i < state.length(); i += 1) {
+            for (int j = 0; j < goalState.length(); j += 1) {
                 if (state.charAt(i) == goalState.charAt(j)) {
-                    int x1=i%3;int x2=j%3;int y1=i/3;int y2=j/3;
-                    d = d + ((Math.abs(x1 - x2)) + Math.abs(y1 - y2));
+                    int x1 = i % 3;
+                    int x2 = j % 3;
+                    int y1 = i / 3;
+                    int y2 = j / 3;
+                    d = d + Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
                 }
+            }
+        }
         return d;
     }
 
+    private double manhattanDistance(String state, String goalState){
+        double d = 0;
+        for (int i = 0; i < state.length(); i += 1) {
+            for (int j = 0; j < goalState.length(); j += 1) {
+                if (state.charAt(i) == goalState.charAt(j)) {
+                    int x1 = i % 3;
+                    int x2 = j % 3;
+                    int y1 = i / 3;
+                    int y2 = j / 3;
+                    d = d + ((Math.abs(x1 - x2)) + Math.abs(y1 - y2));
+                }
+            }
+        }
+        return d;
+    }
+
+    /**
+     * get the successor states of the current state
+     * @param currentState current state
+     * @return list of successor states
+     */
+    private List<Move> getSuccessors(String currentState) {
+        List<Move> successors = new ArrayList<>();
+        int zeroPosition = currentState.indexOf("0");
+
+        switch (zeroPosition) {
+            case 0:
+                successors.add(new Move(swapCharacters(currentState, 1), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 3), Direction.DOWN));
+                break;
+            case 1:
+                successors.add(new Move(swapCharacters(currentState, 0), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 2), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 4), Direction.DOWN));
+                break;
+            case 2:
+                successors.add(new Move(swapCharacters(currentState, 1), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 5), Direction.DOWN));
+
+                break;
+            case 3:
+                successors.add(new Move(swapCharacters(currentState, 4), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 0), Direction.UP));
+                successors.add(new Move(swapCharacters(currentState, 6), Direction.DOWN));
+                break;
+            case 4:
+                successors.add(new Move(swapCharacters(currentState, 3), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 5), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 1), Direction.UP));
+                successors.add(new Move(swapCharacters(currentState, 7), Direction.DOWN));
+                break;
+            case 5:
+                successors.add(new Move(swapCharacters(currentState, 4), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 2), Direction.UP));
+                successors.add(new Move(swapCharacters(currentState, 8), Direction.DOWN));
+                break;
+            case 6:
+                successors.add(new Move(swapCharacters(currentState, 7), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 3), Direction.UP));
+                break;
+            case 7:
+                successors.add(new Move(swapCharacters(currentState, 6), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 8), Direction.RIGHT));
+                successors.add(new Move(swapCharacters(currentState, 4), Direction.UP));
+                break;
+            case 8:
+                successors.add(new Move(swapCharacters(currentState, 7), Direction.LEFT));
+                successors.add(new Move(swapCharacters(currentState, 5), Direction.UP));
+                break;
+        }
+        return successors;
+    }
+
+    /**
+     * swaps character at specified index with zero in the given state
+     * @param state state to be edited
+     * @param index index of character to be swapped with zero
+     * @return the new state after swapping
+     */
+    private String swapCharacters(String state, int index) {
+        int indexOfZero = state.indexOf('0');
+        String updated = state.substring(0, indexOfZero) + state.charAt(index) + state.substring(indexOfZero + 1);
+        updated = updated.substring(0, index) + "0" + updated.substring(index + 1);
+        return updated;
+    }
+
+    // Todo -> Make sure we don't want it then delete
+    /**
+     * get the path by tracing the leaf (goal) to the root (initial)
+     * @param currentNode the leaf node
+     * @return list containing the nodes of the path
+     */
+    private List<String> tracePath(Node currentNode) {
+        List<String> path = new ArrayList<>();
+        int cost = 0;
+        while (currentNode != null) {
+            path.add(currentNode.getState());
+            if (currentNode.getParent() != null)
+                currentNode = currentNode.getParent();
+            else
+                break;
+        }
+        return path;
+    }
 }
